@@ -168,7 +168,7 @@ class BankingSimulator:
             callback=self._delivery_callback,
         )
         self._producer.poll(0)
-        # print(f"Sent event: {json.dumps(event, ensure_ascii=False)}")
+        print(f"Sent event: {json.dumps(event, ensure_ascii=False)}")
 
     def run(
         self,
@@ -219,7 +219,6 @@ class BankingSimulator:
 
 
 if __name__ == "__main__":
-    # simulator = BankingSimulator()
-    # simulator.run()
-    simulator = BankingSimulator(fast_forward=True) 
-    simulator.run(target_sessions=10000)
+    simulator = BankingSimulator(fast_forward=False) 
+    # Mở chế độ sinh dữ liệu realtime vô hạn, giãn cách thời gian để dễ quay video
+    simulator.run(min_delay_sec=1.0, max_delay_sec=3.0)

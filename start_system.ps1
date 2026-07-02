@@ -14,13 +14,13 @@
 # docker exec spark-master bash -c "rm -rf /tmp/checkpoints/*"
 # docker exec spark-master /spark/bin/spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.3 /app/batch_layer/jobs/init_iceberg_tables.py
 
-# 3. Kích hoạt Flink Real-time (Chạy ngầm với cờ -d)
+# 3. Kích hoạt Flink Real-time 
 Write-Host "`n[3/5] Đang bắn Job Flink Real-time xuống JobManager..." -ForegroundColor Cyan
-docker exec -d -e KAFKA_BOOTSTRAP_SERVERS=kafka:29092 -e POSTGRES_HOST=postgres flink-jobmanager ./bin/flink run -py /tmp/fraud_detector.py
+docker exec -it -e KAFKA_BOOTSTRAP_SERVERS=kafka:29092 -e POSTGRES_HOST=postgres flink-jobmanager ./bin/flink run -py /tmp/fraud_detector.py
 
-# 4. Kích hoạt Spark Streaming (Chạy ngầm với cờ -d)
+# 4. Kích hoạt Spark Streaming 
 Write-Host "`n[4/5] Đang bắn Job Spark Streaming xuống Spark Master..." -ForegroundColor Cyan
-docker exec -d spark-master /spark/bin/spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.3,org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.2 /app/batch_layer/jobs/ingest_kafka_to_iceberg.py
+docker exec -it spark-master /spark/bin/spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.3,org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.2 /app/batch_layer/jobs/ingest_kafka_to_iceberg.py
 
 # 5. Bật FastAPI Backend (Mở trong cửa sổ PowerShell mới để bạn dễ theo dõi log)
 Write-Host "`n[5/5] Đang khởi động Backend API..." -ForegroundColor Cyan
@@ -31,3 +31,6 @@ Write-Host "👉 Hãy click đúp vào file serving_layer/index.html để trả
 
 #6. Chạy sql trong warehouse
 # docker exec spark-master /spark/bin/spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.3_2.12:1.4.3 /app/batch_layer/jobs/export_warehouse.py
+
+# 7. Xem log dữ liệu truyền vào flink
+# docker logs --tail 10 -f flink-taskmanager 2>&1 | Select-String "RECEIVED|SCORE|FRAUD|DEBUG|GOD MODE"

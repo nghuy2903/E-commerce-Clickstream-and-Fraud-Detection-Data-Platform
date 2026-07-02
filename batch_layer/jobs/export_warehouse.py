@@ -20,26 +20,28 @@ def main():
         # 1. Truy vấn 100 giao dịch mới nhất từ bảng Raw
         print("📥 Đang hút dữ liệu từ bảng local.raw.raw_banking_events...")
         df_raw = spark.sql("""
-            SELECT *
+            SELECT * 
             FROM local.raw.raw_banking_events
-            LIMIT 10
+            
         """)
-
-        df_dim = spark.sql("""
-            SELECT *
-            FROM local.dim.account_history
-            LIMIT 10
-        """)
+# SELECT COUNT(*)ORDER BY event_timestamp DESC    LIMIT 10
+#             FROM local.raw.raw_banking_events
+  
+        # df_dim = spark.sql("""
+        #     SELECT * 
+        #     FROM local.dim.raw_banking_events
+        #     LIMIT 10
+        # """)
         
         # 2. Hiển thị dữ liệu trên Terminal bằng lệnh chuẩn của Spark
         if df_raw.isEmpty():
             print("⚠️ Bảng hiện tại chưa có dữ liệu nào.")
             return
             
-        print("\n=== 10 GIAO DỊCH MỚI NHẤT ===")
+        # print("\n=== 10 GIAO DỊCH MỚI NHẤT ===")
         # truncate=False giúp hiển thị full text không bị cắt xén (dấu ...)
-        df_raw.show(10, truncate=False)
-        df_dim.show(10, truncate=False)
+        df_raw.show(20, truncate=False)
+        # df_dim.show(10, truncate=False)
         # # 3. Xuất ra file CSV bằng bộ máy của Spark (Native)
         # export_dir = "/app/batch_layer/warehouse/latest_raw_events_export"
         
